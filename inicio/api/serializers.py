@@ -1,9 +1,45 @@
 from rest_framework.serializers import (
 	ModelSerializer, SerializerMethodField, HyperlinkedIdentityField
 )
-from inicio.models import Pelicula, ActorPelicula
+from inicio.models import Pelicula, ActorPelicula, Actor
 
 
+class ActorListSerializer(ModelSerializer):
+	url = HyperlinkedIdentityField(
+		view_name='detail-actor',
+		lookup_field='pk'
+	)
+
+	class Meta:
+		model = Actor
+		fields = [
+			'url',
+			'id',
+			'nombres',
+			'apellidos',
+		]
+
+
+class ActorRetrieveSerializer(ModelSerializer):
+	peliculas = SerializerMethodField()
+
+	class Meta:
+		model = Actor
+		fields = [
+			'nombres',
+			'apellidos',
+			'peliculas'
+		]
+
+	def get_peliculas(self, obj):
+		peliculas = ActorPelicula.objects.filter(actor=obj)
+		if peliculas.count() > 0:
+			return PeliculaActorListSerializer(peliculas, many=True).data
+		else:
+			return None
+
+
+# DETALLE DE LISTA DE ACTORES EN UNA PELICULA
 class ActorPeliculaListSerializer(ModelSerializer):
 	nombre_actor = SerializerMethodField()
 
@@ -16,12 +52,38 @@ class ActorPeliculaListSerializer(ModelSerializer):
 		]
 
 	def get_nombre_actor(self, obj):
-		return str(obj.actor)
+		return "%s %s" % (str(obj.actor.nombres), str(obj.actor.apellidos))
+
+
+# DETALLE DE LISTA DE PELICULAS DE UN ACTOR
+class PeliculaActorListSerializer(ModelSerializer):
+	nombre = SerializerMethodField()
+	sinopsis = SerializerMethodField()
+	fecha_estreno = SerializerMethodField()
+
+	class Meta:
+		model = ActorPelicula
+		fields = [
+			'id',
+			'nombre',
+			'nombre_personaje',
+			'sinopsis',
+			'fecha_estreno',
+		]
+
+	def get_nombre(self, obj):
+		return str(obj.pelicula.nombre)
+
+	def get_sinopsis(self, obj):
+		return str(obj.pelicula.sinopsis)
+
+	def get_fecha_estreno(self, obj):
+		return str(obj.pelicula.fecha_estreno)
 
 
 class PeliculaListSerializer(ModelSerializer):
 	url = HyperlinkedIdentityField(
-		view_name='detail',
+		view_name='detail-pelicula',
 		lookup_field='pk'
 	)
 
@@ -47,6 +109,12 @@ class PeliculaRetrieveSerializer(ModelSerializer):
 			'director',
 			'fecha_estreno',
 			'actores'
+		]
+
+		read_only_fields = [
+			'fecha_estreno',
+			'director',
+			'nombre'
 		]
 
 	def get_actores(self, obj):

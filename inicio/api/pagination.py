@@ -10,3 +10,7 @@ class PeliculaLimitOffsetPagination(LimitOffsetPagination):
 
 class PeliculaPageNumberPagination(PageNumberPagination):
     page_size = 2
+
+
+class ActorPageNumberPagination(PageNumberPagination):
+    page_size = 2
