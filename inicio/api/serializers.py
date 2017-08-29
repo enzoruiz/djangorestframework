@@ -1,5 +1,6 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
-
+from rest_framework.serializers import (
+	ModelSerializer, SerializerMethodField, HyperlinkedIdentityField
+)
 from inicio.models import Pelicula, ActorPelicula
 
 
@@ -19,24 +20,19 @@ class ActorPeliculaListSerializer(ModelSerializer):
 
 
 class PeliculaListSerializer(ModelSerializer):
-	actores = SerializerMethodField()
+	url = HyperlinkedIdentityField(
+		view_name='detail',
+		lookup_field='pk'
+	)
 
 	class Meta:
 		model = Pelicula
 		fields = [
+			'url',
 			'id',
 			'nombre',
-			'sinopsis',
-			'actores'
+			'sinopsis'
 		]
-
-	def get_actores(self, obj):
-		actores = ActorPelicula.objects.filter(pelicula=obj)
-		if actores.count() > 0:
-			lista = ActorPeliculaListSerializer(actores, many=True).data
-		else:
-			lista = None
-		return lista
 
 
 class PeliculaRetrieveSerializer(ModelSerializer):

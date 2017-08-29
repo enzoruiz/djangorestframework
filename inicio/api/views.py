@@ -6,7 +6,13 @@ from .serializers import (
 	ActorPeliculaListSerializer
 )
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.filters import (
+	SearchFilter, OrderingFilter
+)
 from .permissions import IsOwnerOrReadOnly
+from .pagination import (
+	PeliculaLimitOffsetPagination, PeliculaPageNumberPagination
+)
 from inicio.models import Pelicula, ActorPelicula
 
 
@@ -33,7 +39,10 @@ class PeliculaDeleteAPIView(DestroyAPIView):
 class PeliculaListAPIView(ListAPIView):
 	queryset = Pelicula.objects.all()
 	serializer_class = PeliculaListSerializer
-	permission_classes = [IsAuthenticated, ]
+	# permission_classes = [IsAuthenticated, ]
+	filter_backends = [SearchFilter, OrderingFilter]
+	search_fields = ['nombre', 'director']
+	pagination_class = PeliculaPageNumberPagination
 
 
 class ActorPeliculaListAPIView(ListAPIView):
