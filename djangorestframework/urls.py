@@ -15,9 +15,24 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from rest_framework_jwt.views import obtain_jwt_token
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^api/auth/token', obtain_jwt_token),
     url(r'^', include('inicio.urls'), name="inicio"),
     url(r'^api/', include('inicio.api.urls'), name="api"),
+
 ]
+
+
+'''
+
+curl -X POST -d "username=admin&password=password123" http://localhost:8000/api/auth/token
+
+"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoyLCJlbWFpbCI6InBlcGVAaG90bWFpbC5jb20iLCJleHAiOjE1MDQxMTEzMjgsInVzZXJuYW1lIjoicGVwZSJ9.jUJkhcvUWzHIytMQLHOCpzARBRXqxf_0w-yWC43CcbU"
+
+curl -H "Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoyLCJlbWFpbCI6InBlcGVAaG90bWFpbC5jb20iLCJleHAiOjE1MDQxMTEzMjgsInVzZXJuYW1lIjoicGVwZSJ9.jUJkhcvUWzHIytMQLHOCpzARBRXqxf_0w-yWC43CcbU" http://localhost:8000/api/peliculas/
+
+
+'''

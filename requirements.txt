@@ -2,8 +2,10 @@ appdirs==1.4.0
 Django==1.10.4
 django-filter==1.0.1
 djangorestframework==3.5.3
+djangorestframework-jwt==1.11.0
 Markdown==2.6.8
 packaging==16.8
 psycopg2==2.6.2
+PyJWT==1.5.2
 pyparsing==2.1.10
 six==1.10.0
