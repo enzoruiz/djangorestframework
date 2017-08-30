@@ -1,7 +1,8 @@
 from django.conf.urls import url
 from .views import (
     PeliculaListAPIView, PeliculaDetailAPIView, PeliculaUpdateAPIView,
-    PeliculaDeleteAPIView, PeliculaCreateAPIView, ActorListAPIView, ActorDetailAPIView
+    PeliculaDeleteAPIView, PeliculaCreateAPIView, ActorListAPIView,
+    ActorDetailAPIView, UserCreateAPIView, UserLoginAPIView
 )
 
 urlpatterns = [
@@ -19,4 +20,9 @@ urlpatterns = [
         ActorListAPIView.as_view(), name="list-actor"),
     url(r'^actores/(?P<pk>\d+)$',
         ActorDetailAPIView.as_view(), name="detail-actor"),
+
+    url(r'^users/login$',
+        UserLoginAPIView.as_view(), name="login-user"),
+    url(r'^users/register$',
+        UserCreateAPIView.as_view(), name="register-user"),
 ]

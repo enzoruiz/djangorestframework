@@ -1,15 +1,21 @@
+from django.contrib.auth.models import User
 from rest_framework.generics import (
 	ListAPIView, RetrieveAPIView, DestroyAPIView, UpdateAPIView, CreateAPIView
 )
 from .serializers import (
 	PeliculaListSerializer, PeliculaRetrieveSerializer,
-	ActorListSerializer, ActorRetrieveSerializer
+	ActorListSerializer, ActorRetrieveSerializer, UserRetrieveSerializer,
+	UserLoginSerializer
 )
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.filters import (
 	SearchFilter, OrderingFilter
 )
 from rest_framework.mixins import UpdateModelMixin, DestroyModelMixin
+
+from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from rest_framework.views import APIView
 
 from .permissions import IsOwnerOrReadOnly
 from .pagination import (
@@ -70,3 +76,21 @@ class ActorDetailAPIView(UpdateModelMixin, DestroyModelMixin, RetrieveAPIView):
 
 	def delete(self, request, *args, **kwargs):
 		return self.destroy(request, *args, **kwargs)
+
+
+class UserCreateAPIView(CreateAPIView):
+	queryset = User.objects.all()
+	serializer_class = UserRetrieveSerializer
+
+
+class UserLoginAPIView(APIView):
+	permission_classes = [AllowAny]
+	serializer_class = UserLoginSerializer
+
+	def post(self, request, *args, **kwargs):
+		data = request.data
+		serializer = UserLoginSerializer(data=data)
+		if serializer.is_valid(raise_exception=True):
+			new_data = serializer.data
+			return Response(new_data, status=HTTP_200_OK)
+		return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
